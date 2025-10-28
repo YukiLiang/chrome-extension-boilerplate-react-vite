@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中概股数据测试页面</title>
+</head>
+<body>
+    <h1>中概股数据测试页面</h1>
+    <p>这个页面模拟新浪财经中概股页面的表格结构</p>
+    
+    <div class="tbl_wrap" id="tbl_wrap" style="display: block;">
+        <table border="0">
+            <thead>
+                <tr>
+                    <th><a href="javascript:void(0);">代码</a></th>
+                    <th>名称</th>
+                    <td class="colorize"><a href="javascript:void(0);">最新价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">涨跌额</a></td>
+                    <td class="colorize sort_up"><a href="javascript:void(0);">涨跌幅</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">开盘价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">最高价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">最低价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">52周最高价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">52周最低价</a></td>
+                    <td><a href="javascript:void(0);">成交量</a></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="global_up" style="">
+                    <th><a href="http://biz.finance.sina.com.cn/suggest/lookup_n.php?strict=1&amp;country=us&amp;q=CHSN" target="_blank">CHSN</a></th>
+                    <th><a href="http://biz.finance.sina.com.cn/suggest/lookup_n.php?strict=1&amp;country=us&amp;q=CHSN" target="_blank">香颂国际</a></th>
+                    <td class="colorize">2.50</td>
+                    <td class="colorize">+0.41</td>
+                    <td class="colorize sort_up">+19.640%</td>
+                    <td class="colorize">2.210</td>
+                    <td class="colorize">2.560</td>
+                    <td class="colorize">2.142</td>
+                    <td class="colorize">1108.000</td>
+                    <td class="colorize">1.500</td>
+                    <td>122,312</td>
+                </tr>
+                <tr class="global_up" style="">
+                    <th><a href="http://biz.finance.sina.com.cn/suggest/lookup_n.php?strict=1&amp;country=us&amp;q=DQ" target="_blank">DQ</a></th>
+                    <th><a href="http://biz.finance.sina.com.cn/suggest/lookup_n.php?strict=1&amp;country=us&amp;q=DQ" target="_blank">大全新能源</a></th>
+                    <td class="colorize">29.69</td>
+                    <td class="colorize">+3.66</td>
+                    <td class="colorize sort_up">+14.060%</td>
+                    <td class="colorize">28.400</td>
+                    <td class="colorize">30.380</td>
+                    <td class="colorize">26.280</td>
+                    <td class="colorize">31.210</td>
+                    <td class="colorize">12.405</td>
+                    <td>2,022,832</td>
+                </tr>
+                <tr class="global_down" style="">
+                    <th><a href="http://biz.finance.sina.com.cn/suggest/lookup_n.php?strict=1&amp;country=us&amp;q=BABA" target="_blank">BABA</a></th>
+                    <th><a href="http://biz.finance.sina.com.cn/suggest/lookup_n.php?strict=1&amp;country=us&amp;q=BABA" target="_blank">阿里巴巴</a></th>
+                    <td class="colorize">85.20</td>
+                    <td class="colorize">-2.15</td>
+                    <td class="colorize sort_down">-2.46%</td>
+                    <td class="colorize">87.35</td>
+                    <td class="colorize">87.80</td>
+                    <td class="colorize">84.90</td>
+                    <td class="colorize">95.20</td>
+                    <td class="colorize">75.30</td>
+                    <td>15,234,567</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pages">
+            <span class="pageone pagedisabled">上一页</span><span class="pagecurr pagedisabled">1</span><a class="" href="javascript:void(0);">2</a><a class="" href="javascript:void(0);">3</a>...<a class="" href="javascript:void(0);">16</a>
+            <a class="pageone" href="javascript:void(0);">下一页</a>
+        </div>
+    </div>
+    
+    <script>
+        // 测试数据提取功能
+        function testDataExtraction() {
+            const tableWrapper = document.getElementById('tbl_wrap');
+            if (!tableWrapper) {
+                console.error('未找到ID为tbl_wrap的表格容器');
+                return null;
+            }
+            
+            const table = tableWrapper.querySelector('table');
+            if (!table) {
+                console.error('在tbl_wrap容器内未找到表格');
+                return null;
+            }
+            
+            const headers = [];
+            const headerRow = table.querySelector('thead tr');
+            if (headerRow) {
+                const headerCells = headerRow.querySelectorAll('th, td');
+                headerCells.forEach(cell => {
+                    const link = cell.querySelector('a');
+                    headers.push(link ? link.textContent.trim() : cell.textContent.trim());
+                });
+            }
+            
+            const rows = [];
+            const tbody = table.querySelector('tbody');
+            if (tbody) {
+                const dataRows = tbody.querySelectorAll('tr');
+                dataRows.forEach(row => {
+                    const rowData = {};
+                    const cells = row.querySelectorAll('th, td');
+                    
+                    cells.forEach((cell, index) => {
+                        if (headers[index]) {
+                            const link = cell.querySelector('a');
+                            const cellValue = link ? link.textContent.trim() : cell.textContent.trim();
+                            rowData[headers[index]] = cellValue;
+                        }
+                    });
+                    
+                    rowData.rowClass = row.className;
+                    rows.push(rowData);
+                });
+            }
+            
+            return {
+                headers: headers,
+                rows: rows,
+                totalRows: rows.length
+            };
+        }
+        
+        // 页面加载完成后测试
+        window.addEventListener('load', () => {
+            const data = testDataExtraction();
+            console.log('提取的数据:', data);
+        });
+    </script>
+</body>
+</html>

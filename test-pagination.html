@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中概股分页数据测试页面</title>
+    <style>
+        .nav2 { margin: 20px 0; }
+        .pages { margin: 0; width: 400px; float: right; }
+        .pages a, .pages span { 
+            display: inline-block; 
+            padding: 5px 10px; 
+            margin: 0 2px; 
+            border: 1px solid #ccc; 
+            text-decoration: none; 
+            color: #333;
+            cursor: pointer;
+        }
+        .pages a:hover { background-color: #f0f0f0; }
+        .pagedisabled { 
+            background-color: #f5f5f5; 
+            color: #999; 
+            cursor: not-allowed; 
+        }
+        .pagecurr { 
+            background-color: #007bff; 
+            color: white; 
+        }
+        .tbl_wrap { margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .global_up { background-color: #d4edda; }
+        .global_down { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>中概股分页数据测试页面</h1>
+    <p>这个页面模拟新浪财经中概股页面的分页表格结构</p>
+    
+    <!-- 分页导航 -->
+    <div class="nav2" id="list_nav2">
+        <div class="pages" style="margin:0px; width:400px; float:right;" id="list_pages_top2">
+            <a class="pageone" href="javascript:void(0);" onclick="goToPage(1)">上一页</a>
+            <a class="" href="javascript:void(0);" onclick="goToPage(1)">1</a>
+            <span>...</span>
+            <a class="" href="javascript:void(0);" onclick="goToPage(14)">14</a>
+            <a class="" href="javascript:void(0);" onclick="goToPage(15)">15</a>
+            <span class="pagecurr pagedisabled">16</span>
+            <span class="pageone pagedisabled">下一页</span>
+        </div>
+        <span style="line-height:30px; padding-left:10px; color:#666;">注：点击每列标题可排序。例如：点击"最新价"可以按价格排序</span>
+    </div>
+    
+    <!-- 表格数据 -->
+    <div class="tbl_wrap" id="tbl_wrap" style="display: block;">
+        <table border="0">
+            <thead>
+                <tr>
+                    <th><a href="javascript:void(0);">代码</a></th>
+                    <th>名称</th>
+                    <td class="colorize"><a href="javascript:void(0);">最新价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">涨跌额</a></td>
+                    <td class="colorize sort_up"><a href="javascript:void(0);">涨跌幅</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">开盘价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">最高价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">最低价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">52周最高价</a></td>
+                    <td class="colorize"><a href="javascript:void(0);">52周最低价</a></td>
+                    <td><a href="javascript:void(0);">成交量</a></td>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- 数据行将通过JavaScript动态生成 -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        // 模拟数据
+        const mockData = [
+            { code: 'CHSN', name: '香颂国际', price: '2.50', change: '+0.41', changePercent: '+19.640%', open: '2.210', high: '2.560', low: '2.142', high52: '1108.000', low52: '1.500', volume: '122,312', trend: 'up' },
+            { code: 'DQ', name: '大全新能源', price: '29.69', change: '+3.66', changePercent: '+14.060%', open: '28.400', high: '30.380', low: '26.280', high52: '31.210', low52: '12.405', volume: '2,022,832', trend: 'up' },
+            { code: 'BABA', name: '阿里巴巴', price: '85.20', change: '-2.15', changePercent: '-2.46%', open: '87.35', high: '87.80', low: '84.90', high52: '95.20', low52: '75.30', volume: '15,234,567', trend: 'down' },
+            { code: 'JD', name: '京东', price: '45.80', change: '+1.20', changePercent: '+2.69%', open: '44.60', high: '46.10', low: '44.20', high52: '48.50', low52: '38.90', volume: '8,765,432', trend: 'up' },
+            { code: 'PDD', name: '拼多多', price: '78.90', change: '-1.50', changePercent: '-1.87%', open: '80.40', high: '81.20', low: '78.10', high52: '85.30', low52: '65.40', volume: '12,345,678', trend: 'down' }
+        ];
+        
+        let currentPage = 16; // 当前在第16页（最后一页）
+        
+        // 生成表格行
+        function generateTableRows() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            mockData.forEach(stock => {
+                const row = document.createElement('tr');
+                row.className = `global_${stock.trend}`;
+                
+                row.innerHTML = `
+                    <th><a href="javascript:void(0);">${stock.code}</a></th>
+                    <th><a href="javascript:void(0);">${stock.name}</a></th>
+                    <td class="colorize">${stock.price}</td>
+                    <td class="colorize">${stock.change}</td>
+                    <td class="colorize sort_${stock.trend}">${stock.changePercent}</td>
+                    <td class="colorize">${stock.open}</td>
+                    <td class="colorize">${stock.high}</td>
+                    <td class="colorize">${stock.low}</td>
+                    <td class="colorize">${stock.high52}</td>
+                    <td class="colorize">${stock.low52}</td>
+                    <td>${stock.volume}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 更新分页状态
+        function updatePagination(page) {
+            const pagesDiv = document.getElementById('list_pages_top2');
+            
+            if (page === 1) {
+                // 第一页
+                pagesDiv.innerHTML = `
+                    <a class="pageone" href="javascript:void(0);" onclick="goToPage(1)">上一页</a>
+                    <span class="pagecurr pagedisabled">1</span>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(2)">2</a>
+                    <span>...</span>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(15)">15</a>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(16)">16</a>
+                    <a class="pageone" href="javascript:void(0);" onclick="goToPage(2)">下一页</a>
+                `;
+            } else if (page === 16) {
+                // 最后一页
+                pagesDiv.innerHTML = `
+                    <a class="pageone" href="javascript:void(0);" onclick="goToPage(15)">上一页</a>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(1)">1</a>
+                    <span>...</span>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(14)">14</a>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(15)">15</a>
+                    <span class="pagecurr pagedisabled">16</span>
+                    <span class="pageone pagedisabled">下一页</span>
+                `;
+            } else {
+                // 中间页
+                pagesDiv.innerHTML = `
+                    <a class="pageone" href="javascript:void(0);" onclick="goToPage(${page - 1})">上一页</a>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(1)">1</a>
+                    <span>...</span>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(${page - 1})">${page - 1}</a>
+                    <span class="pagecurr pagedisabled">${page}</span>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(${page + 1})">${page + 1}</a>
+                    <span>...</span>
+                    <a class="" href="javascript:void(0);" onclick="goToPage(16)">16</a>
+                    <a class="pageone" href="javascript:void(0);" onclick="goToPage(${page + 1})">下一页</a>
+                `;
+            }
+        }
+        
+        // 跳转到指定页面
+        function goToPage(page) {
+            currentPage = page;
+            updatePagination(page);
+            generateTableRows();
+            console.log(`跳转到第 ${page} 页`);
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            updatePagination(currentPage);
+            generateTableRows();
+            console.log('页面初始化完成，当前在第16页（最后一页）');
+        });
+        
+        // 测试分页功能
+        function testPagination() {
+            console.log('开始测试分页功能...');
+            
+            // 模拟从第1页开始
+            goToPage(1);
+            
+            setTimeout(() => {
+                console.log('测试完成');
+            }, 1000);
+        }
+    </script>
+    
+    <button onclick="testPagination()" style="margin: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        测试分页功能
+    </button>
+</body>
+</html>
